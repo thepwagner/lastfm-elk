@@ -1,0 +1,30 @@
+elasticsearch:
+  image: elasticsearch
+  ports:
+   - "9200"
+  environment:
+   ES_HEAP_SIZE: 8g
+
+logstash:
+  image: logstash
+  volumes:
+   - logstash-conf/:/config-dir
+  links:
+   - elasticsearch:elasticsearch
+  ports:
+   - "5000:5000"
+  command: logstash -f /config-dir/logstash.conf
+
+kibana:
+  image: digitalwonderland/kibana
+  links:
+   - elasticsearch:elasticsearch
+  ports:
+   - "5601:5601"
+
+loader:
+  build: loader
+  links:
+   - logstash:logstash
+
+
